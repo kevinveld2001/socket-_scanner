@@ -6,12 +6,17 @@ const ioHandler = (req, res) => {
         const io = new Server(res.socket.server);
         
         io.on('connection', socket => {
-          socket.broadcast.emit('a user connected');
-          console.log("server test");
-          socket.on('scan', (id, code) => {
-            console.log(`scan(${id}):` + code);
-            socket.to(id).emit('scan-receiver', code);
-          })
+            socket.broadcast.emit('a user connected');
+            console.log(socket.id)
+            socket.on('phone-connected', id => {
+                console.log("phone-connected:" + id)
+                socket.to(id).emit('connected-phone')
+            })
+
+            socket.on('scan', (id, code) => {
+              console.log(`scan(${id}):` + code);
+              socket.to(id).emit('scan-receiver', code);
+            })
         })
     
         res.socket.server.io = io;

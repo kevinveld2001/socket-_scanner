@@ -6,26 +6,41 @@ export default function scan() {
     const router = useRouter()
     const { id } = router.query
 
-    const [newScan, setNewScan] = useState(((id, scan) => {}));
-
-    let socket;
+    const [socketIsConnected, setSocketIsConnected] = useState(false);
+    const socket = io()
+    
     useEffect(()=>{
-        fetch('/api/socket').finally(() => {
-            socket = io()
-
-            socket.on('connect', () => {
-                console.log("test")
-                setNewScan(((id, scan) => {
-                    console.log(`new scan ${id} ${scan}`)
-                    socket.emit('scan', id, scan)
-                }));
-            })
+        fetch('/api/socket')
+            
+        socket.on('connect', () => {
+            setSocketIsConnected(true);
         })
+        socket.on('disconnect', () =>{
+            setSocketIsConnected(false);
+        })
+
+        return () => {
+            socket.off('connect');
+            socket.off('disconnect');
+        }
+    
     },[])
+
+    useEffect(() => {
+        if (socketIsConnected) {
+            socket.emit('phone-connected', id);
+        }
+    }, [socketIsConnected])
+
+
 
     return <div>
         {id}
-        <button className='bg-gray-500 p-3 m-3 rounded text-white' onClick={()=> {newScan(id,'test')}}>test</button>
+        {socketIsConnected
+            ? <button className='bg-gray-500 p-3 m-3 rounded text-white' onClick={()=> {socket.emit('scan',id,'test')}}>test</button>
+            : <div></div>
+        }
+        
         
     </div>
 }
