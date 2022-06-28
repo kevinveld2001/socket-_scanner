@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client'
 import Camera from '../../components/Camera';
 
-export default function scan() {
-    const router = useRouter()
+export default function Scan() {
+    const router = useRouter();
     const { id } = router.query
 
     const [socketIsConnected, setSocketIsConnected] = useState(false);
