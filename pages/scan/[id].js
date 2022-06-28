@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client'
+import Camera from '../../components/Camera';
 
 export default function scan() {
     const router = useRouter()
@@ -35,9 +36,11 @@ export default function scan() {
 
 
     return <div>
-        {id}
         {socketIsConnected
-            ? <button className='bg-gray-500 p-3 m-3 rounded text-white' onClick={()=> {socket.emit('scan',id,'test')}}>test</button>
+            ? <Camera onScan={(scan) => {
+                socket.emit('scan',id,scan);
+            
+            }}/>
             : <div></div>
         }
         
